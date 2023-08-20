@@ -2,34 +2,28 @@ from .models import News
 from .serializers import NewsSerializer
 from rest_framework.response import Response
 from rest_framework import (
-    views,
-    viewsets,
     permissions,
     generics,
+    mixins,
 )
 
 
-class NewsAPI(generics.ListAPIView):
-    permission_classes = [
-        permissions.IsAuthenticated
-    ]
-    queryset = News.objects.all()
+class NewsViewSet(generics.ListAPIView, mixins.CreateModelMixin):
+    def get_queryset(self):
+        start = int(self.request.GET.get('start', 0))
+        count = int(self.request.GET.get('count', 20))
+        return News.objects.filter(pk__gte=start)[:count]
+
     serializer_class = NewsSerializer
-
-    def post(self, request):
-        serializer = NewsSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response({
-            'data': serializer.data
-        })
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly
+    ]
 
 
 class SpecificNewsAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [
-        permissions.IsAuthenticated
-    ]
-    serializer_class = NewsSerializer
-    queryset = News.objects.all()
     lookup_url_kwarg = 'id'
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly
+    ]
