@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -12,7 +13,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -62,15 +63,20 @@ WSGI_APPLICATION = 'eneik.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'eneik_db',
+#         'USER': 'maksgordt',
+#         'PASSWORD': '',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+DATABASE_URL = os.getenv('DATABASE_URL')
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'eneik_db',
-        'USER': 'maksgordt',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(),
 }
 
 
